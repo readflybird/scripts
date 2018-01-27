@@ -17,7 +17,7 @@ import re
 
 
 def log_error(msg, line_no, line):
-    sys.stderr.write('{msg} at line {line_no}: {line}'.format(msg=msg,line_no=line_no, line=line))
+    sys.stderr.write('{msg} at line {line_no}: {line}\n'.format(msg=msg,line_no=line_no, line=line))
     pass
 
 
@@ -81,12 +81,12 @@ def check(filename):
     with open(filename, 'r') as f:
         for line in f:
             if line:
-                line = line.lower()
+                line = line.lower().strip()
                 tokens = re.findall(r"[\w']+", line)
                 action = tokens[0] if len(tokens) > 0 else None
                 if action in ('create', 'alter', 'drop', 'truncate'):
                     table_name = extract_table_name(action, tokens)
-                    if not table_name.startswith('tmp'):
+                    if not table_name.startswith('tmp') or not table_name.startswith('temp'):
                         log_error('Performing illegal actions on a non-tmp table', line_no, line)
                         err_cnt += 1
 
